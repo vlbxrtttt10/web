@@ -1,1 +1,469 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>Aviones ✈️</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #eef7ff;
+      color: #102a43;
+    }
+
+    /* NAVBAR */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+      background: rgba(3, 37, 65, 0.95);
+      padding: 15px 8%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 3px 15px rgba(0,0,0,.2);
+    }
+
+    .logo {
+      color: white;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    .menu {
+      display: flex;
+      gap: 20px;
+      list-style: none;
+    }
+
+    .menu a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      transition: .3s;
+    }
+
+    .menu a:hover {
+      color: #61dafb;
+    }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 100px 20px 50px;
+      background:
+        linear-gradient(rgba(0, 119, 182, .65), rgba(3, 37, 65, .8)),
+        linear-gradient(135deg, #56ccf2, #2f80ed);
+      color: white;
+      overflow: hidden;
+    }
+
+    .plane {
+      font-size: 8rem;
+      animation: volar 4s ease-in-out infinite;
+      margin-bottom: 20px;
+    }
+
+    @keyframes volar {
+      0%, 100% {
+        transform: translateX(-20px) rotate(-3deg);
+      }
+
+      50% {
+        transform: translateX(20px) translateY(-15px) rotate(3deg);
+      }
+    }
+
+    .hero h1 {
+      font-size: clamp(3rem, 8vw, 6rem);
+      margin-bottom: 15px;
+    }
+
+    .hero p {
+      font-size: 1.3rem;
+      max-width: 700px;
+    }
+
+    .btn {
+      margin-top: 30px;
+      padding: 15px 30px;
+      border-radius: 30px;
+      background: white;
+      color: #0066cc;
+      text-decoration: none;
+      font-weight: bold;
+      transition: .3s;
+      display: inline-block;
+    }
+
+    .btn:hover {
+      transform: scale(1.08);
+      box-shadow: 0 10px 30px rgba(0,0,0,.2);
+    }
+
+    /* SECCIONES */
+    section {
+      padding: 90px 8%;
+    }
+
+    section h2 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 15px;
+    }
+
+    .subtitle {
+      text-align: center;
+      margin-bottom: 50px;
+      color: #52708a;
+    }
+
+    /* TARJETAS */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 25px;
+    }
+
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 8px 25px rgba(0,0,0,.1);
+      transition: .3s;
+      border: 2px solid transparent;
+    }
+
+    .card:hover {
+      transform: translateY(-10px);
+      border-color: #42a5f5;
+      box-shadow: 0 15px 35px rgba(0, 119, 182, .2);
+    }
+
+    .emoji {
+      font-size: 4rem;
+      margin-bottom: 15px;
+    }
+
+    .card h3 {
+      margin-bottom: 10px;
+      color: #0066a2;
+    }
+
+    /* DATOS */
+    .facts {
+      background: #dff3ff;
+    }
+
+    .fact-box {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 20px;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    .fact {
+      background: #fff;
+      padding: 25px;
+      text-align: center;
+      border-radius: 15px;
+    }
+
+    .fact strong {
+      display: block;
+      font-size: 2rem;
+      color: #0077b6;
+      margin-bottom: 8px;
+    }
+
+    /* HISTORIA */
+    .timeline {
+      max-width: 850px;
+      margin: auto;
+    }
+
+    .timeline-item {
+      background: white;
+      margin: 20px 0;
+      padding: 25px;
+      border-left: 6px solid #2196f3;
+      border-radius: 0 15px 15px 0;
+      box-shadow: 0 5px 20px rgba(0,0,0,.08);
+    }
+
+    .timeline-item h3 {
+      color: #0077b6;
+      margin-bottom: 8px;
+    }
+
+    /* CTA */
+    .cta {
+      text-align: center;
+      background: linear-gradient(135deg, #0077b6, #023e8a);
+      color: white;
+    }
+
+    .cta h2 {
+      margin-bottom: 20px;
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      background: #021f33;
+      color: white;
+      padding: 30px;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 700px) {
+      nav {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .menu {
+        gap: 10px;
+        font-size: .85rem;
+      }
+
+      .hero {
+        padding-top: 150px;
+      }
+
+      .plane {
+        font-size: 5rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <nav>
+    <div class="logo">✈️ AeroMundo</div>
+
+    <ul class="menu">
+      <li><a href="#inicio">🏠 Inicio</a></li>
+      <li><a href="#tipos">🛫 Tipos</a></li>
+      <li><a href="#datos">📊 Datos</a></li>
+      <li><a href="#historia">📜 Historia</a></li>
+    </ul>
+  </nav>
+
+
+  <!-- INICIO -->
+  <header class="hero" id="inicio">
+
+    <div class="plane">✈️</div>
+
+    <h1>El mundo de los aviones</h1>
+
+    <p>
+      🌎 Descubre cómo funcionan, cuáles son sus tipos
+      y cómo transformaron la manera en que viajamos.
+    </p>
+
+    <a href="#tipos" class="btn">
+      🚀 Empezar presentación
+    </a>
+
+  </header>
+
+
+  <!-- TIPOS -->
+  <section id="tipos">
+
+    <h2>🛩️ Tipos de aviones</h2>
+
+    <p class="subtitle">
+      Existen aviones diseñados para diferentes misiones.
+    </p>
+
+    <div class="cards">
+
+      <div class="card">
+        <div class="emoji">✈️</div>
+        <h3>Avión comercial</h3>
+        <p>
+          Transporta pasajeros entre ciudades y países.
+          Son fundamentales para el turismo y el comercio.
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="emoji">🛩️</div>
+        <h3>Avión privado</h3>
+        <p>
+          Aviones pequeños utilizados para viajes privados,
+          negocios o entrenamiento.
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="emoji">🚀</div>
+        <h3>Avión supersónico</h3>
+        <p>
+          Diseñado para viajar a velocidades superiores
+          a la del sonido.
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="emoji">🛫</div>
+        <h3>Avión de carga</h3>
+        <p>
+          Transporta mercancías, paquetes y productos
+          alrededor del mundo.
+        </p>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- DATOS -->
+  <section class="facts" id="datos">
+
+    <h2>📊 Datos increíbles</h2>
+
+    <p class="subtitle">
+      Algunas cifras que te harán decir: ¡WOW! 🤯
+    </p>
+
+    <div class="fact-box">
+
+      <div class="fact">
+        <strong>🌎</strong>
+        Viajes internacionales
+      </div>
+
+      <div class="fact">
+        <strong>900+</strong>
+        km/h en aviones comerciales
+      </div>
+
+      <div class="fact">
+        <strong>✈️</strong>
+        Millones de vuelos
+      </div>
+
+      <div class="fact">
+        <strong>10 km</strong>
+        Altitud aproximada de crucero
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- HISTORIA -->
+  <section id="historia">
+
+    <h2>📜 Un poco de historia</h2>
+
+    <p class="subtitle">
+      Desde los primeros vuelos hasta la aviación moderna 🚀
+    </p>
+
+    <div class="timeline">
+
+      <div class="timeline-item">
+        <h3>🪁 Antes de los aviones</h3>
+        <p>
+          Durante siglos, las personas soñaron con poder
+          volar como las aves.
+        </p>
+      </div>
+
+      <div class="timeline-item">
+        <h3>1903 — 🛩️ Primer vuelo</h3>
+        <p>
+          Los hermanos Wright realizaron uno de los primeros
+          vuelos controlados con un avión propulsado.
+        </p>
+      </div>
+
+      <div class="timeline-item">
+        <h3>✈️ Era de los aviones comerciales</h3>
+        <p>
+          La aviación comenzó a convertirse en una forma
+          habitual de transporte para millones de personas.
+        </p>
+      </div>
+
+      <div class="timeline-item">
+        <h3>🚀 Aviación moderna</h3>
+        <p>
+          Hoy existen aeronaves cada vez más eficientes,
+          silenciosas, rápidas y tecnológicas.
+        </p>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- CTA -->
+  <section class="cta">
+
+    <h2>🌤️ ¡El cielo es el límite!</h2>
+
+    <p>
+      Los aviones conectan personas, culturas y lugares
+      de todo el planeta. 🌎❤️
+    </p>
+
+    <a href="#inicio" class="btn">
+      🔝 Volver arriba
+    </a>
+
+  </section>
+
+
+  <!-- FOOTER -->
+  <footer>
+    ✈️ AeroMundo | Presentación sobre aviones 🌎
+    <br><br>
+    Hecho con ❤️, HTML y CSS
+  </footer>
+
+
+  <script>
+    // Pequeña interacción al hacer clic en las tarjetas
+    const cards = document.querySelectorAll(".card");
+
+    cards.forEach(card => {
+      card.addEventListener("click", () => {
+        card.style.transform = "scale(1.04)";
+
+        setTimeout(() => {
+          card.style.transform = "";
+        }, 300);
+      });
+    });
+  </script>
+
+</body>
+</html>
