@@ -4,9 +4,40 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Aviones ✈️</title>
+  <title>AeroMundo — El mundo de los aviones ✈️</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  >
 
   <style>
+    /* =========================================================
+       VARIABLES
+    ========================================================= */
+
+    :root {
+      --primary: #38bdf8;
+      --primary-dark: #0284c7;
+      --blue: #2563eb;
+      --navy: #020617;
+      --navy-2: #071a32;
+      --text: #102a43;
+      --muted: #64748b;
+      --white: #ffffff;
+      --light: #f0f9ff;
+      --card: rgba(255, 255, 255, .72);
+      --border: rgba(255, 255, 255, .35);
+      --shadow: 0 25px 70px rgba(2, 40, 80, .14);
+    }
+
+    /* =========================================================
+       RESET
+    ========================================================= */
+
     * {
       margin: 0;
       padding: 0;
@@ -14,455 +45,2224 @@
       scroll-behavior: smooth;
     }
 
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-      background: #eef7ff;
-      color: #102a43;
+    html {
+      overflow-x: hidden;
     }
 
-    /* NAVBAR */
+    body {
+      font-family: "Inter", sans-serif;
+      background: var(--light);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    /* =========================================================
+       THREE.JS CANVAS
+    ========================================================= */
+
+    #three-bg {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -10;
+      pointer-events: none;
+    }
+
+    /* =========================================================
+       CURSOR GLOW
+    ========================================================= */
+
+    .cursor-glow {
+      position: fixed;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      background: radial-gradient(
+        circle,
+        rgba(56, 189, 248, .16),
+        transparent 68%
+      );
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      mix-blend-mode: screen;
+    }
+
+    /* =========================================================
+       NAVBAR
+    ========================================================= */
+
     nav {
       position: fixed;
-      top: 0;
-      width: 100%;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(1150px, calc(100% - 30px));
       z-index: 1000;
-      background: rgba(3, 37, 65, 0.95);
-      padding: 15px 8%;
+
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      box-shadow: 0 3px 15px rgba(0,0,0,.2);
+      justify-content: space-between;
+
+      padding: 14px 20px;
+
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 22px;
+
+      background: rgba(3, 20, 40, .65);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+
+      box-shadow:
+        0 15px 50px rgba(0,0,0,.18),
+        inset 0 1px 0 rgba(255,255,255,.08);
+
+      transition: .4s ease;
+    }
+
+    nav.scrolled {
+      top: 10px;
+      background: rgba(2, 15, 30, .88);
     }
 
     .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
       color: white;
-      font-size: 1.5rem;
-      font-weight: bold;
+      font-family: "Space Grotesk", sans-serif;
+      font-weight: 700;
+      font-size: 1.25rem;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .logo-icon {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+
+      border-radius: 12px;
+      background: linear-gradient(135deg, #38bdf8, #2563eb);
+
+      box-shadow:
+        0 0 25px rgba(56, 189, 248, .35);
     }
 
     .menu {
       display: flex;
-      gap: 20px;
+      align-items: center;
+      gap: 8px;
       list-style: none;
     }
 
     .menu a {
-      color: white;
+      position: relative;
+      display: block;
+
+      color: rgba(255,255,255,.78);
       text-decoration: none;
-      font-weight: bold;
+
+      padding: 10px 13px;
+      border-radius: 12px;
+
+      font-size: .9rem;
+      font-weight: 600;
+
+      transition: .3s ease;
+    }
+
+    .menu a:hover,
+    .menu a.active {
+      color: white;
+      background: rgba(255,255,255,.09);
+    }
+
+    .menu a::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 4px;
+
+      width: 0;
+      height: 2px;
+
+      border-radius: 5px;
+      background: var(--primary);
+
+      transform: translateX(-50%);
       transition: .3s;
     }
 
-    .menu a:hover {
-      color: #61dafb;
+    .menu a:hover::after,
+    .menu a.active::after {
+      width: 22px;
     }
 
-    /* HERO */
+    /* =========================================================
+       HERO
+    ========================================================= */
+
     .hero {
+      position: relative;
       min-height: 100vh;
+
       display: flex;
-      flex-direction: column;
-      justify-content: center;
       align-items: center;
-      text-align: center;
-      padding: 100px 20px 50px;
-      background:
-        linear-gradient(rgba(0, 119, 182, .65), rgba(3, 37, 65, .8)),
-        linear-gradient(135deg, #56ccf2, #2f80ed);
+      justify-content: center;
+
+      padding: 150px 20px 100px;
+
       color: white;
+      text-align: center;
+
       overflow: hidden;
+
+      background:
+        radial-gradient(
+          circle at 50% 20%,
+          rgba(56, 189, 248, .2),
+          transparent 35%
+        ),
+        linear-gradient(
+          180deg,
+          #020617 0%,
+          #032a4d 55%,
+          #075985 100%
+        );
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+
+      background:
+        linear-gradient(
+          rgba(2, 6, 23, .08),
+          rgba(2, 6, 23, .55)
+        );
+
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+
+      width: min(1000px, 100%);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+
+      padding: 8px 14px;
+      margin-bottom: 25px;
+
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 999px;
+
+      background: rgba(255,255,255,.06);
+      backdrop-filter: blur(10px);
+
+      color: #bae6fd;
+      font-size: .82rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #4ade80;
+      box-shadow: 0 0 12px #4ade80;
+    }
+
+    .plane-wrapper {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 20px;
     }
 
     .plane {
-      font-size: 8rem;
-      animation: volar 4s ease-in-out infinite;
-      margin-bottom: 20px;
+      font-size: clamp(5rem, 12vw, 9rem);
+
+      filter:
+        drop-shadow(0 20px 25px rgba(0,0,0,.2))
+        drop-shadow(0 0 30px rgba(56,189,248,.3));
+
+      transform: rotate(-8deg);
     }
 
-    @keyframes volar {
-      0%, 100% {
-        transform: translateX(-20px) rotate(-3deg);
-      }
+    .plane-ring {
+      position: absolute;
+      inset: -25px;
 
-      50% {
-        transform: translateX(20px) translateY(-15px) rotate(3deg);
-      }
+      border: 1px solid rgba(125,211,252,.18);
+      border-radius: 50%;
+
+      transform: rotate(-15deg);
+    }
+
+    .plane-ring::after {
+      content: "";
+
+      position: absolute;
+      inset: 15px;
+
+      border: 1px dashed rgba(125,211,252,.15);
+      border-radius: 50%;
     }
 
     .hero h1 {
-      font-size: clamp(3rem, 8vw, 6rem);
-      margin-bottom: 15px;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: clamp(3.2rem, 8vw, 7.5rem);
+      line-height: .95;
+      letter-spacing: -.06em;
+
+      margin-bottom: 25px;
+
+      background: linear-gradient(
+        135deg,
+        #ffffff 10%,
+        #bae6fd 45%,
+        #38bdf8 90%
+      );
+
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
     }
 
-    .hero p {
-      font-size: 1.3rem;
-      max-width: 700px;
+    .hero-description {
+      max-width: 720px;
+      margin: auto;
+
+      color: rgba(255,255,255,.72);
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      line-height: 1.8;
+    }
+
+    .hero-buttons {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 14px;
+
+      margin-top: 35px;
     }
 
     .btn {
-      margin-top: 30px;
-      padding: 15px 30px;
-      border-radius: 30px;
-      background: white;
-      color: #0066cc;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+
+      padding: 15px 24px;
+
+      border-radius: 15px;
+
       text-decoration: none;
-      font-weight: bold;
-      transition: .3s;
-      display: inline-block;
+      font-weight: 700;
+
+      transition:
+        transform .3s ease,
+        box-shadow .3s ease,
+        background .3s ease;
+    }
+
+    .btn-primary {
+      color: #082f49;
+
+      background: white;
+
+      box-shadow:
+        0 15px 35px rgba(0,0,0,.18),
+        0 0 30px rgba(255,255,255,.08);
+    }
+
+    .btn-secondary {
+      color: white;
+
+      border: 1px solid rgba(255,255,255,.15);
+      background: rgba(255,255,255,.07);
+
+      backdrop-filter: blur(10px);
     }
 
     .btn:hover {
-      transform: scale(1.08);
-      box-shadow: 0 10px 30px rgba(0,0,0,.2);
+      transform: translateY(-5px);
     }
 
-    /* SECCIONES */
+    .btn-primary:hover {
+      box-shadow: 0 20px 45px rgba(0,0,0,.25);
+    }
+
+    .scroll-indicator {
+      position: absolute;
+      bottom: 25px;
+      left: 50%;
+      transform: translateX(-50%);
+
+      color: rgba(255,255,255,.55);
+      font-size: .75rem;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 35px;
+
+      margin: 8px auto 0;
+
+      background: linear-gradient(
+        transparent,
+        #7dd3fc
+      );
+    }
+
+    /* =========================================================
+       MAIN
+    ========================================================= */
+
+    main {
+      position: relative;
+      z-index: 2;
+    }
+
     section {
-      padding: 90px 8%;
+      position: relative;
+      padding: 120px 7%;
+    }
+
+    .section-inner {
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .section-label {
+      margin-bottom: 10px;
+
+      color: var(--primary-dark);
+
+      font-size: .8rem;
+      font-weight: 800;
+      letter-spacing: .15em;
+      text-transform: uppercase;
     }
 
     section h2 {
-      text-align: center;
-      font-size: 2.5rem;
-      margin-bottom: 15px;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: clamp(2.4rem, 5vw, 4.2rem);
+      line-height: 1;
+      letter-spacing: -.045em;
+
+      margin-bottom: 18px;
     }
 
     .subtitle {
-      text-align: center;
-      margin-bottom: 50px;
-      color: #52708a;
+      max-width: 650px;
+      margin-bottom: 55px;
+
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.8;
     }
 
-    /* TARJETAS */
+    .center-heading {
+      text-align: center;
+    }
+
+    .center-heading .subtitle {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* =========================================================
+       TYPES
+    ========================================================= */
+
+    #tipos {
+      background:
+        radial-gradient(
+          circle at 10% 20%,
+          rgba(56,189,248,.08),
+          transparent 25%
+        ),
+        #f8fcff;
+    }
+
     .cards {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-      gap: 25px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 22px;
     }
 
     .card {
-      background: white;
+      position: relative;
+
+      min-height: 330px;
       padding: 30px;
-      border-radius: 20px;
-      text-align: center;
-      box-shadow: 0 8px 25px rgba(0,0,0,.1);
-      transition: .3s;
-      border: 2px solid transparent;
+
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+
+      overflow: hidden;
+
+      border: 1px solid rgba(148,163,184,.18);
+      border-radius: 28px;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255,255,255,.9),
+          rgba(240,249,255,.65)
+        );
+
+      box-shadow: var(--shadow);
+
+      transform-style: preserve-3d;
+
+      transition:
+        border-color .3s ease,
+        box-shadow .3s ease;
     }
 
     .card:hover {
-      transform: translateY(-10px);
-      border-color: #42a5f5;
-      box-shadow: 0 15px 35px rgba(0, 119, 182, .2);
+      border-color: rgba(56,189,248,.5);
+
+      box-shadow:
+        0 30px 70px rgba(2,132,199,.16);
+    }
+
+    .card::before {
+      content: "";
+
+      position: absolute;
+      width: 180px;
+      height: 180px;
+
+      top: -80px;
+      right: -60px;
+
+      border-radius: 50%;
+
+      background: rgba(56,189,248,.13);
+
+      filter: blur(10px);
+    }
+
+    .card-number {
+      position: absolute;
+      top: 20px;
+      right: 24px;
+
+      color: #cbd5e1;
+      font-size: .8rem;
+      font-weight: 800;
     }
 
     .emoji {
+      position: absolute;
+      top: 30px;
+      left: 30px;
+
       font-size: 4rem;
-      margin-bottom: 15px;
+
+      transform: translateZ(35px);
+      filter: drop-shadow(0 12px 15px rgba(2,40,80,.12));
     }
 
     .card h3 {
+      position: relative;
+
       margin-bottom: 10px;
-      color: #0066a2;
+
+      color: #075985;
+
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 1.4rem;
+
+      transform: translateZ(30px);
     }
 
-    /* DATOS */
-    .facts {
-      background: #dff3ff;
+    .card p {
+      position: relative;
+
+      color: #64748b;
+      line-height: 1.7;
+      font-size: .92rem;
+
+      transform: translateZ(20px);
     }
 
-    .fact-box {
+    .card-arrow {
+      position: absolute;
+      bottom: 28px;
+      right: 28px;
+
+      width: 36px;
+      height: 36px;
+
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 20px;
-      max-width: 1000px;
-      margin: auto;
+      place-items: center;
+
+      border-radius: 50%;
+
+      color: white;
+      background: #0284c7;
+
+      opacity: 0;
+      transform: translateY(10px);
+
+      transition: .3s ease;
+    }
+
+    .card:hover .card-arrow {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* =========================================================
+       FACTS
+    ========================================================= */
+
+    .facts-section {
+      color: white;
+
+      background:
+        radial-gradient(
+          circle at 80% 20%,
+          rgba(56,189,248,.2),
+          transparent 30%
+        ),
+        linear-gradient(
+          135deg,
+          #020617,
+          #082f49
+        );
+    }
+
+    .facts-section .section-label {
+      color: #7dd3fc;
+    }
+
+    .facts-section .subtitle {
+      color: rgba(255,255,255,.6);
+    }
+
+    .facts-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
     }
 
     .fact {
-      background: #fff;
-      padding: 25px;
+      padding: 35px 25px;
+
+      border: 1px solid rgba(255,255,255,.09);
+      border-radius: 25px;
+
+      background: rgba(255,255,255,.045);
+      backdrop-filter: blur(12px);
+
       text-align: center;
-      border-radius: 15px;
+
+      transition: .3s ease;
     }
 
-    .fact strong {
-      display: block;
+    .fact:hover {
+      background: rgba(255,255,255,.08);
+      transform: translateY(-7px);
+    }
+
+    .fact-icon {
       font-size: 2rem;
-      color: #0077b6;
-      margin-bottom: 8px;
+      margin-bottom: 18px;
     }
 
-    /* HISTORIA */
+    .fact-number {
+      display: block;
+
+      margin-bottom: 8px;
+
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 2.7rem;
+      font-weight: 700;
+
+      color: #7dd3fc;
+    }
+
+    .fact-label {
+      color: rgba(255,255,255,.6);
+      font-size: .9rem;
+      line-height: 1.5;
+    }
+
+    /* =========================================================
+       HISTORY
+    ========================================================= */
+
+    #historia {
+      background: #f8fcff;
+    }
+
     .timeline {
-      max-width: 850px;
-      margin: auto;
+      position: relative;
+
+      max-width: 900px;
+      margin: 70px auto 0;
+    }
+
+    .timeline::before {
+      content: "";
+
+      position: absolute;
+      left: 25px;
+      top: 0;
+      bottom: 0;
+
+      width: 2px;
+
+      background: linear-gradient(
+        #38bdf8,
+        #2563eb,
+        transparent
+      );
     }
 
     .timeline-item {
+      position: relative;
+
+      margin-bottom: 25px;
+      padding-left: 75px;
+    }
+
+    .timeline-dot {
+      position: absolute;
+      left: 10px;
+      top: 30px;
+
+      width: 31px;
+      height: 31px;
+
+      display: grid;
+      place-items: center;
+
+      border: 5px solid #f8fcff;
+      border-radius: 50%;
+
+      background: #0ea5e9;
+
+      box-shadow:
+        0 0 0 4px rgba(14,165,233,.15),
+        0 0 25px rgba(14,165,233,.3);
+    }
+
+    .timeline-content {
+      padding: 28px 30px;
+
+      border: 1px solid rgba(148,163,184,.15);
+      border-radius: 22px;
+
       background: white;
-      margin: 20px 0;
-      padding: 25px;
-      border-left: 6px solid #2196f3;
-      border-radius: 0 15px 15px 0;
-      box-shadow: 0 5px 20px rgba(0,0,0,.08);
+
+      box-shadow: 0 15px 45px rgba(2,40,80,.08);
+
+      transition: .3s ease;
     }
 
-    .timeline-item h3 {
-      color: #0077b6;
+    .timeline-content:hover {
+      transform: translateX(8px);
+      box-shadow: 0 20px 55px rgba(2,132,199,.12);
+    }
+
+    .timeline-content span {
+      display: inline-block;
       margin-bottom: 8px;
+
+      color: #0284c7;
+      font-size: .8rem;
+      font-weight: 800;
+      letter-spacing: .08em;
     }
 
-    /* CTA */
+    .timeline-content h3 {
+      margin-bottom: 9px;
+
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 1.35rem;
+    }
+
+    .timeline-content p {
+      color: #64748b;
+      line-height: 1.7;
+    }
+
+    /* =========================================================
+       CTA
+    ========================================================= */
+
     .cta {
+      position: relative;
+
+      overflow: hidden;
+
       text-align: center;
-      background: linear-gradient(135deg, #0077b6, #023e8a);
       color: white;
+
+      background:
+        radial-gradient(
+          circle at 50% 0,
+          rgba(56,189,248,.25),
+          transparent 40%
+        ),
+        linear-gradient(
+          135deg,
+          #0369a1,
+          #172554
+        );
+    }
+
+    .cta::before,
+    .cta::after {
+      content: "";
+
+      position: absolute;
+
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    .cta::before {
+      width: 500px;
+      height: 500px;
+
+      left: -250px;
+      top: -250px;
+    }
+
+    .cta::after {
+      width: 700px;
+      height: 700px;
+
+      right: -350px;
+      bottom: -500px;
+    }
+
+    .cta-content {
+      position: relative;
+      z-index: 2;
     }
 
     .cta h2 {
-      margin-bottom: 20px;
+      font-size: clamp(2.5rem, 6vw, 5rem);
     }
 
-    /* FOOTER */
+    .cta p {
+      max-width: 600px;
+      margin: 0 auto;
+
+      color: rgba(255,255,255,.72);
+      line-height: 1.8;
+    }
+
+    .cta .btn {
+      margin-top: 30px;
+    }
+
+    /* =========================================================
+       FOOTER
+    ========================================================= */
+
     footer {
+      padding: 35px 20px;
+
+      color: rgba(255,255,255,.55);
       text-align: center;
-      background: #021f33;
-      color: white;
-      padding: 30px;
+
+      background: #020617;
+
+      font-size: .9rem;
     }
 
-    /* RESPONSIVE */
+    footer strong {
+      color: white;
+    }
+
+    /* =========================================================
+       MOBILE
+    ========================================================= */
+
+    @media (max-width: 950px) {
+
+      .cards,
+      .facts-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+    }
+
     @media (max-width: 700px) {
+
+      .cursor-glow {
+        display: none;
+      }
+
       nav {
-        flex-direction: column;
-        gap: 10px;
+        width: calc(100% - 20px);
+        padding: 12px 15px;
       }
 
       .menu {
-        gap: 10px;
-        font-size: .85rem;
+        gap: 2px;
+      }
+
+      .menu a {
+        padding: 8px;
+        font-size: .72rem;
+      }
+
+      .menu a span {
+        display: none;
       }
 
       .hero {
-        padding-top: 150px;
+        padding-top: 160px;
       }
 
-      .plane {
-        font-size: 5rem;
+      .hero h1 {
+        font-size: clamp(3rem, 15vw, 5rem);
       }
+
+      .hero-description {
+        font-size: .95rem;
+      }
+
+      section {
+        padding: 85px 6%;
+      }
+
+      .cards,
+      .facts-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .card {
+        min-height: 300px;
+      }
+
+      .timeline::before {
+        left: 15px;
+      }
+
+      .timeline-item {
+        padding-left: 50px;
+      }
+
+      .timeline-dot {
+        left: 0;
+      }
+
+      .timeline-content {
+        padding: 23px;
+      }
+
+      .hero-buttons {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+    }
+
+    /* =========================================================
+       ACCESSIBILITY
+    ========================================================= */
+
+    @media (prefers-reduced-motion: reduce) {
+
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+      }
+
     }
   </style>
 </head>
 
 <body>
 
-  <!-- NAVBAR -->
-  <nav>
-    <div class="logo">✈️ AeroMundo</div>
+  <!-- THREE.JS -->
+  <canvas id="three-bg"></canvas>
+
+  <!-- Cursor -->
+  <div class="cursor-glow"></div>
+
+
+  <!-- =======================================================
+       NAVBAR
+  ======================================================== -->
+
+  <nav id="navbar">
+
+    <a href="#inicio" class="logo">
+      <span class="logo-icon">✈️</span>
+      AeroMundo
+    </a>
 
     <ul class="menu">
-      <li><a href="#inicio">🏠 Inicio</a></li>
-      <li><a href="#tipos">🛫 Tipos</a></li>
-      <li><a href="#datos">📊 Datos</a></li>
-      <li><a href="#historia">📜 Historia</a></li>
+      <li>
+        <a href="#inicio" class="active">
+          🏠 <span>Inicio</span>
+        </a>
+      </li>
+
+      <li>
+        <a href="#tipos">
+          🛩️ <span>Tipos</span>
+        </a>
+      </li>
+
+      <li>
+        <a href="#datos">
+          📊 <span>Datos</span>
+        </a>
+      </li>
+
+      <li>
+        <a href="#historia">
+          📜 <span>Historia</span>
+        </a>
+      </li>
     </ul>
+
   </nav>
 
 
-  <!-- INICIO -->
+  <!-- =======================================================
+       HERO
+  ======================================================== -->
+
   <header class="hero" id="inicio">
 
-    <div class="plane">✈️</div>
+    <div class="hero-content">
 
-    <h1>El mundo de los aviones</h1>
+      <div class="eyebrow hero-item">
+        <span class="eyebrow-dot"></span>
+        Explorando el cielo
+      </div>
 
-    <p>
-      🌎 Descubre cómo funcionan, cuáles son sus tipos
-      y cómo transformaron la manera en que viajamos.
-    </p>
+      <div class="plane-wrapper hero-item">
+        <div class="plane-ring"></div>
+        <div class="plane">✈️</div>
+      </div>
 
-    <a href="#tipos" class="btn">
-      🚀 Empezar presentación
-    </a>
+      <h1 class="hero-title hero-item">
+        El mundo<br>
+        de los aviones
+      </h1>
+
+      <p class="hero-description hero-item">
+        Descubre la tecnología, historia y evolución de las
+        máquinas que hicieron posible conquistar los cielos.
+      </p>
+
+      <div class="hero-buttons hero-item">
+
+        <a href="#tipos" class="btn btn-primary">
+          🚀 Explorar ahora
+        </a>
+
+        <a href="#historia" class="btn btn-secondary">
+          📖 Ver historia
+        </a>
+
+      </div>
+
+    </div>
+
+    <div class="scroll-indicator">
+      Scroll para explorar
+      <div class="scroll-line"></div>
+    </div>
 
   </header>
 
 
-  <!-- TIPOS -->
-  <section id="tipos">
+  <main>
 
-    <h2>🛩️ Tipos de aviones</h2>
+    <!-- =====================================================
+         TIPOS
+    ====================================================== -->
 
-    <p class="subtitle">
-      Existen aviones diseñados para diferentes misiones.
-    </p>
+    <section id="tipos">
 
-    <div class="cards">
+      <div class="section-inner">
 
-      <div class="card">
-        <div class="emoji">✈️</div>
-        <h3>Avión comercial</h3>
+        <div class="center-heading reveal">
+
+          <div class="section-label">
+            La flota
+          </div>
+
+          <h2>
+            Un avión para<br>
+            cada misión.
+          </h2>
+
+          <p class="subtitle">
+            Desde enormes aeronaves comerciales hasta
+            máquinas supersónicas diseñadas para romper
+            la barrera del sonido.
+          </p>
+
+        </div>
+
+
+        <div class="cards">
+
+          <article class="card tilt reveal">
+
+            <span class="card-number">01</span>
+
+            <div class="emoji">
+              ✈️
+            </div>
+
+            <h3>
+              Avión comercial
+            </h3>
+
+            <p>
+              Transporta pasajeros entre ciudades y países,
+              conectando personas y culturas alrededor del mundo.
+            </p>
+
+            <div class="card-arrow">
+              →
+            </div>
+
+          </article>
+
+
+          <article class="card tilt reveal">
+
+            <span class="card-number">02</span>
+
+            <div class="emoji">
+              🛩️
+            </div>
+
+            <h3>
+              Avión privado
+            </h3>
+
+            <p>
+              Aeronaves compactas utilizadas para viajes
+              ejecutivos, privados, entrenamiento y recreación.
+            </p>
+
+            <div class="card-arrow">
+              →
+            </div>
+
+          </article>
+
+
+          <article class="card tilt reveal">
+
+            <span class="card-number">03</span>
+
+            <div class="emoji">
+              🚀
+            </div>
+
+            <h3>
+              Supersónico
+            </h3>
+
+            <p>
+              Diseñado para alcanzar velocidades superiores
+              a la del sonido y reducir drásticamente los
+              tiempos de viaje.
+            </p>
+
+            <div class="card-arrow">
+              →
+            </div>
+
+          </article>
+
+
+          <article class="card tilt reveal">
+
+            <span class="card-number">04</span>
+
+            <div class="emoji">
+              📦
+            </div>
+
+            <h3>
+              Avión de carga
+            </h3>
+
+            <p>
+              Transporta mercancías, paquetes y productos
+              esenciales entre diferentes puntos del planeta.
+            </p>
+
+            <div class="card-arrow">
+              →
+            </div>
+
+          </article>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         DATOS
+    ====================================================== -->
+
+    <section class="facts-section" id="datos">
+
+      <div class="section-inner">
+
+        <div class="center-heading reveal">
+
+          <div class="section-label">
+            En números
+          </div>
+
+          <h2>
+            El cielo es<br>
+            realmente enorme.
+          </h2>
+
+          <p class="subtitle">
+            Algunas cifras de la aviación que muestran
+            hasta dónde ha llegado la ingeniería humana.
+          </p>
+
+        </div>
+
+
+        <div class="facts-grid">
+
+          <div class="fact reveal">
+
+            <div class="fact-icon">
+              🌎
+            </div>
+
+            <strong
+              class="fact-number"
+              data-target="190"
+            >
+              0
+            </strong>
+
+            <div class="fact-label">
+              países conectados
+            </div>
+
+          </div>
+
+
+          <div class="fact reveal">
+
+            <div class="fact-icon">
+              ⚡
+            </div>
+
+            <strong
+              class="fact-number"
+              data-target="900"
+            >
+              0
+            </strong>
+
+            <div class="fact-label">
+              km/h aproximadamente
+            </div>
+
+          </div>
+
+
+          <div class="fact reveal">
+
+            <div class="fact-icon">
+              ✈️
+            </div>
+
+            <strong
+              class="fact-number"
+              data-target="10"
+            >
+              0
+            </strong>
+
+            <div class="fact-label">
+              km de altitud de crucero
+            </div>
+
+          </div>
+
+
+          <div class="fact reveal">
+
+            <div class="fact-icon">
+              🌐
+            </div>
+
+            <strong
+              class="fact-number"
+              data-target="100000"
+            >
+              0
+            </strong>
+
+            <div class="fact-label">
+              vuelos diarios aproximadamente
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         HISTORIA
+    ====================================================== -->
+
+    <section id="historia">
+
+      <div class="section-inner">
+
+        <div class="center-heading reveal">
+
+          <div class="section-label">
+            Línea del tiempo
+          </div>
+
+          <h2>
+            De soñar con volar<br>
+            a dominar los cielos.
+          </h2>
+
+          <p class="subtitle">
+            La aviación es el resultado de siglos de
+            imaginación, experimentación e ingeniería.
+          </p>
+
+        </div>
+
+
+        <div class="timeline">
+
+          <article class="timeline-item reveal">
+
+            <div class="timeline-dot">
+              🪁
+            </div>
+
+            <div class="timeline-content">
+
+              <span>
+                ANTES DE 1900
+              </span>
+
+              <h3>
+                El sueño de volar
+              </h3>
+
+              <p>
+                Durante siglos, inventores y científicos
+                estudiaron las aves y desarrollaron
+                diferentes máquinas para intentar elevarse
+                del suelo.
+              </p>
+
+            </div>
+
+          </article>
+
+
+          <article class="timeline-item reveal">
+
+            <div class="timeline-dot">
+              ✈️
+            </div>
+
+            <div class="timeline-content">
+
+              <span>
+                1903
+              </span>
+
+              <h3>
+                Los hermanos Wright
+              </h3>
+
+              <p>
+                Wilbur y Orville Wright realizaron en 1903
+                uno de los primeros vuelos controlados,
+                propulsados y sostenidos de un avión.
+              </p>
+
+            </div>
+
+          </article>
+
+
+          <article class="timeline-item reveal">
+
+            <div class="timeline-dot">
+              🌎
+            </div>
+
+            <div class="timeline-content">
+
+              <span>
+                SIGLO XX
+              </span>
+
+              <h3>
+                La aviación comercial
+              </h3>
+
+              <p>
+                Los aviones pasaron de ser máquinas
+                experimentales a convertirse en uno de
+                los principales medios de transporte
+                internacional.
+              </p>
+
+            </div>
+
+          </article>
+
+
+          <article class="timeline-item reveal">
+
+            <div class="timeline-dot">
+              🚀
+            </div>
+
+            <div class="timeline-content">
+
+              <span>
+                ACTUALIDAD
+              </span>
+
+              <h3>
+                Una nueva generación
+              </h3>
+
+              <p>
+                La industria continúa desarrollando
+                aeronaves más eficientes, silenciosas,
+                automatizadas y sostenibles.
+              </p>
+
+            </div>
+
+          </article>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         CTA
+    ====================================================== -->
+
+    <section class="cta">
+
+      <div class="cta-content reveal">
+
+        <div class="section-label">
+          Próximo destino
+        </div>
+
+        <h2>
+          El cielo no<br>
+          tiene límites. 🌤️
+        </h2>
+
         <p>
-          Transporta pasajeros entre ciudades y países.
-          Son fundamentales para el turismo y el comercio.
+          Los aviones transformaron la forma en que
+          viajamos y conectaron al mundo como nunca antes.
         </p>
+
+        <a href="#inicio" class="btn btn-primary">
+          🔝 Volver al inicio
+        </a>
+
       </div>
 
-      <div class="card">
-        <div class="emoji">🛩️</div>
-        <h3>Avión privado</h3>
-        <p>
-          Aviones pequeños utilizados para viajes privados,
-          negocios o entrenamiento.
-        </p>
-      </div>
+    </section>
 
-      <div class="card">
-        <div class="emoji">🚀</div>
-        <h3>Avión supersónico</h3>
-        <p>
-          Diseñado para viajar a velocidades superiores
-          a la del sonido.
-        </p>
-      </div>
-
-      <div class="card">
-        <div class="emoji">🛫</div>
-        <h3>Avión de carga</h3>
-        <p>
-          Transporta mercancías, paquetes y productos
-          alrededor del mundo.
-        </p>
-      </div>
-
-    </div>
-
-  </section>
+  </main>
 
 
-  <!-- DATOS -->
-  <section class="facts" id="datos">
+  <!-- =======================================================
+       FOOTER
+  ======================================================== -->
 
-    <h2>📊 Datos increíbles</h2>
-
-    <p class="subtitle">
-      Algunas cifras que te harán decir: ¡WOW! 🤯
-    </p>
-
-    <div class="fact-box">
-
-      <div class="fact">
-        <strong>🌎</strong>
-        Viajes internacionales
-      </div>
-
-      <div class="fact">
-        <strong>900+</strong>
-        km/h en aviones comerciales
-      </div>
-
-      <div class="fact">
-        <strong>✈️</strong>
-        Millones de vuelos
-      </div>
-
-      <div class="fact">
-        <strong>10 km</strong>
-        Altitud aproximada de crucero
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- HISTORIA -->
-  <section id="historia">
-
-    <h2>📜 Un poco de historia</h2>
-
-    <p class="subtitle">
-      Desde los primeros vuelos hasta la aviación moderna 🚀
-    </p>
-
-    <div class="timeline">
-
-      <div class="timeline-item">
-        <h3>🪁 Antes de los aviones</h3>
-        <p>
-          Durante siglos, las personas soñaron con poder
-          volar como las aves.
-        </p>
-      </div>
-
-      <div class="timeline-item">
-        <h3>1903 — 🛩️ Primer vuelo</h3>
-        <p>
-          Los hermanos Wright realizaron uno de los primeros
-          vuelos controlados con un avión propulsado.
-        </p>
-      </div>
-
-      <div class="timeline-item">
-        <h3>✈️ Era de los aviones comerciales</h3>
-        <p>
-          La aviación comenzó a convertirse en una forma
-          habitual de transporte para millones de personas.
-        </p>
-      </div>
-
-      <div class="timeline-item">
-        <h3>🚀 Aviación moderna</h3>
-        <p>
-          Hoy existen aeronaves cada vez más eficientes,
-          silenciosas, rápidas y tecnológicas.
-        </p>
-      </div>
-
-    </div>
-
-  </section>
-
-
-  <!-- CTA -->
-  <section class="cta">
-
-    <h2>🌤️ ¡El cielo es el límite!</h2>
-
-    <p>
-      Los aviones conectan personas, culturas y lugares
-      de todo el planeta. 🌎❤️
-    </p>
-
-    <a href="#inicio" class="btn">
-      🔝 Volver arriba
-    </a>
-
-  </section>
-
-
-  <!-- FOOTER -->
   <footer>
-    ✈️ AeroMundo | Presentación sobre aviones 🌎
+
+    <strong>
+      ✈️ AeroMundo
+    </strong>
+
     <br><br>
-    Hecho con ❤️, HTML y CSS
+
+    Una pequeña exploración por el fascinante mundo
+    de la aviación.
+
+    <br><br>
+
+    Hecho con ❤️, HTML, CSS, GSAP y Three.js
+
   </footer>
 
 
+  <!-- =======================================================
+       LIBRARIES
+  ======================================================== -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js"
+    }
+  }
+  </script>
+
+
+  <!-- =======================================================
+       GSAP
+  ======================================================== -->
+
   <script>
-    // Pequeña interacción al hacer clic en las tarjetas
-    const cards = document.querySelectorAll(".card");
 
-    cards.forEach(card => {
-      card.addEventListener("click", () => {
-        card.style.transform = "scale(1.04)";
+    gsap.registerPlugin(ScrollTrigger);
 
-        setTimeout(() => {
-          card.style.transform = "";
-        }, 300);
-      });
+    /*
+      HERO INTRO
+    */
+
+    const heroTimeline = gsap.timeline({
+      defaults: {
+        ease: "power4.out"
+      }
     });
+
+    heroTimeline
+      .from(".hero-item", {
+        opacity: 0,
+        y: 35,
+        duration: .9,
+        stagger: .13
+      })
+      .from(".plane", {
+        scale: .6,
+        rotate: -25,
+        duration: 1.2,
+        ease: "back.out(1.7)"
+      }, "-=.7");
+
+
+    /*
+      FLOATING PLANE
+    */
+
+    gsap.to(".plane", {
+      y: -14,
+      rotation: -4,
+      duration: 2.2,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut"
+    });
+
+
+    /*
+      PLANE RING
+    */
+
+    gsap.to(".plane-ring", {
+      rotation: 25,
+      scale: 1.08,
+      duration: 5,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut"
+    });
+
+
+    /*
+      SCROLL REVEALS
+    */
+
+    gsap.utils.toArray(".reveal").forEach((element) => {
+
+      gsap.from(element, {
+
+        opacity: 0,
+        y: 50,
+
+        duration: .9,
+
+        ease: "power3.out",
+
+        scrollTrigger: {
+          trigger: element,
+          start: "top 85%",
+          once: true
+        }
+
+      });
+
+    });
+
+
+    /*
+      CARDS STAGGER
+    */
+
+    gsap.from(".card", {
+
+      opacity: 0,
+      y: 70,
+      scale: .96,
+
+      duration: .8,
+      stagger: .12,
+
+      ease: "power3.out",
+
+      scrollTrigger: {
+        trigger: ".cards",
+        start: "top 80%"
+      }
+
+    });
+
+
+    /*
+      TIMELINE
+    */
+
+    gsap.from(".timeline-item", {
+
+      opacity: 0,
+      x: -50,
+
+      duration: .8,
+      stagger: .2,
+
+      ease: "power3.out",
+
+      scrollTrigger: {
+        trigger: ".timeline",
+        start: "top 80%"
+      }
+
+    });
+
+
+    /*
+      NAVBAR
+    */
+
+    const navbar = document.querySelector("#navbar");
+
+    window.addEventListener("scroll", () => {
+
+      navbar.classList.toggle(
+        "scrolled",
+        window.scrollY > 50
+      );
+
+    });
+
+
+    /*
+      ACTIVE NAV LINK
+    */
+
+    const sections = document.querySelectorAll("section, header");
+    const navLinks = document.querySelectorAll(".menu a");
+
+    window.addEventListener("scroll", () => {
+
+      let current = "";
+
+      sections.forEach(section => {
+
+        const sectionTop =
+          section.offsetTop - 180;
+
+        if (window.scrollY >= sectionTop) {
+          current = section.id;
+        }
+
+      });
+
+      navLinks.forEach(link => {
+
+        link.classList.remove("active");
+
+        if (
+          link.getAttribute("href") === "#" + current
+        ) {
+          link.classList.add("active");
+        }
+
+      });
+
+    });
+
+
+    /*
+      COUNTERS
+    */
+
+    document.querySelectorAll(".fact-number").forEach(counter => {
+
+      const target =
+        Number(counter.dataset.target);
+
+      const object = {
+        value: 0
+      };
+
+      gsap.to(object, {
+
+        value: target,
+
+        duration: 2,
+
+        ease: "power2.out",
+
+        scrollTrigger: {
+          trigger: counter,
+          start: "top 85%",
+          once: true
+        },
+
+        onUpdate: () => {
+
+          const value =
+            Math.floor(object.value);
+
+          counter.textContent =
+            value.toLocaleString("es-ES");
+
+        }
+
+      });
+
+    });
+
+
+    /*
+      CARD TILT
+    */
+
+    if (window.innerWidth > 700) {
+
+      document.querySelectorAll(".tilt").forEach(card => {
+
+        card.addEventListener("mousemove", (event) => {
+
+          const rect =
+            card.getBoundingClientRect();
+
+          const x =
+            event.clientX - rect.left;
+
+          const y =
+            event.clientY - rect.top;
+
+          const centerX =
+            rect.width / 2;
+
+          const centerY =
+            rect.height / 2;
+
+          const rotateX =
+            ((y - centerY) / centerY) * -5;
+
+          const rotateY =
+            ((x - centerX) / centerX) * 5;
+
+          gsap.to(card, {
+
+            rotationX: rotateX,
+            rotationY: rotateY,
+
+            duration: .35,
+
+            ease: "power2.out",
+
+            transformPerspective: 900
+
+          });
+
+        });
+
+
+        card.addEventListener("mouseleave", () => {
+
+          gsap.to(card, {
+
+            rotationX: 0,
+            rotationY: 0,
+
+            duration: .7,
+
+            ease: "elastic.out(1, .5)"
+
+          });
+
+        });
+
+      });
+
+    }
+
+
+    /*
+      CURSOR GLOW
+    */
+
+    const cursor =
+      document.querySelector(".cursor-glow");
+
+    if (window.innerWidth > 700) {
+
+      window.addEventListener("mousemove", (event) => {
+
+        gsap.to(cursor, {
+
+          x: event.clientX,
+          y: event.clientY,
+
+          duration: .5,
+          ease: "power3.out"
+
+        });
+
+      });
+
+    }
+
+  </script>
+
+
+  <!-- =======================================================
+       THREE.JS
+  ======================================================== -->
+
+  <script type="module">
+
+    import * as THREE from "three";
+
+
+    /*
+      SCENE
+    */
+
+    const canvas =
+      document.querySelector("#three-bg");
+
+    const scene =
+      new THREE.Scene();
+
+
+    /*
+      CAMERA
+    */
+
+    const camera =
+      new THREE.PerspectiveCamera(
+        60,
+        window.innerWidth / window.innerHeight,
+        .1,
+        100
+      );
+
+    camera.position.z = 5;
+
+
+    /*
+      RENDERER
+    */
+
+    const renderer =
+      new THREE.WebGLRenderer({
+        canvas,
+        alpha: true,
+        antialias: true
+      });
+
+    renderer.setPixelRatio(
+      Math.min(window.devicePixelRatio, 2)
+    );
+
+    renderer.setSize(
+      window.innerWidth,
+      window.innerHeight
+    );
+
+
+    /*
+      PARTICLES
+    */
+
+    const particleCount =
+      window.innerWidth < 700
+        ? 900
+        : 1800;
+
+    const positions =
+      new Float32Array(
+        particleCount * 3
+      );
+
+    const colors =
+      new Float32Array(
+        particleCount * 3
+      );
+
+
+    for (let i = 0; i < particleCount; i++) {
+
+      const i3 = i * 3;
+
+      positions[i3] =
+        (Math.random() - .5) * 14;
+
+      positions[i3 + 1] =
+        (Math.random() - .5) * 9;
+
+      positions[i3 + 2] =
+        (Math.random() - .5) * 8;
+
+
+      /*
+        Azul/celeste
+      */
+
+      const color =
+        Math.random() > .5
+          ? new THREE.Color("#38bdf8")
+          : new THREE.Color("#bae6fd");
+
+      colors[i3] =
+        color.r;
+
+      colors[i3 + 1] =
+        color.g;
+
+      colors[i3 + 2] =
+        color.b;
+
+    }
+
+
+    const geometry =
+      new THREE.BufferGeometry();
+
+    geometry.setAttribute(
+      "position",
+      new THREE.BufferAttribute(
+        positions,
+        3
+      )
+    );
+
+    geometry.setAttribute(
+      "color",
+      new THREE.BufferAttribute(
+        colors,
+        3
+      )
+    );
+
+
+    const material =
+      new THREE.PointsMaterial({
+
+        size:
+          window.innerWidth < 700
+            ? .025
+            : .035,
+
+        vertexColors: true,
+
+        transparent: true,
+
+        opacity: .65,
+
+        blending:
+          THREE.AdditiveBlending,
+
+        depthWrite: false
+
+      });
+
+
+    const particles =
+      new THREE.Points(
+        geometry,
+        material
+      );
+
+    scene.add(particles);
+
+
+    /*
+      EXTRA PARTICLES / STARS
+    */
+
+    const starsGeometry =
+      new THREE.BufferGeometry();
+
+    const starPositions =
+      new Float32Array(400 * 3);
+
+    for (let i = 0; i < 400; i++) {
+
+      starPositions[i * 3] =
+        (Math.random() - .5) * 20;
+
+      starPositions[i * 3 + 1] =
+        (Math.random() - .5) * 15;
+
+      starPositions[i * 3 + 2] =
+        (Math.random() - .5) * 15;
+
+    }
+
+    starsGeometry.setAttribute(
+      "position",
+      new THREE.BufferAttribute(
+        starPositions,
+        3
+      )
+    );
+
+
+    const starsMaterial =
+      new THREE.PointsMaterial({
+
+        color: "#ffffff",
+
+        size: .025,
+
+        transparent: true,
+
+        opacity: .45
+
+      });
+
+
+    const stars =
+      new THREE.Points(
+        starsGeometry,
+        starsMaterial
+      );
+
+    scene.add(stars);
+
+
+    /*
+      MOUSE PARALLAX
+    */
+
+    let mouseX = 0;
+    let mouseY = 0;
+
+    window.addEventListener(
+      "mousemove",
+      event => {
+
+        mouseX =
+          (event.clientX / window.innerWidth - .5);
+
+        mouseY =
+          (event.clientY / window.innerHeight - .5);
+
+      }
+    );
+
+
+    /*
+      SCROLL EFFECT
+    */
+
+    let scrollY = 0;
+
+    window.addEventListener(
+      "scroll",
+      () => {
+
+        scrollY =
+          window.scrollY;
+
+      }
+    );
+
+
+    /*
+      ANIMATION
+    */
+
+    const clock =
+      new THREE.Clock();
+
+
+    function animate() {
+
+      requestAnimationFrame(animate);
+
+      const elapsed =
+        clock.getElapsedTime();
+
+
+      /*
+        Rotación de partículas
+      */
+
+      particles.rotation.y =
+        elapsed * .018;
+
+      particles.rotation.x =
+        Math.sin(elapsed * .15) * .05;
+
+
+      stars.rotation.y =
+        elapsed * .006;
+
+
+      /*
+        Movimiento del mouse
+      */
+
+      particles.position.x +=
+        (
+          mouseX * .12 -
+          particles.position.x
+        ) * .01;
+
+      particles.position.y +=
+        (
+          -mouseY * .12 -
+          particles.position.y
+        ) * .01;
+
+
+      /*
+        Movimiento por scroll
+      */
+
+      particles.rotation.z =
+        scrollY * .00008;
+
+
+      camera.position.x +=
+        (
+          mouseX * .15 -
+          camera.position.x
+        ) * .015;
+
+      camera.position.y +=
+        (
+          -mouseY * .1 -
+          camera.position.y
+        ) * .015;
+
+
+      camera.lookAt(0, 0, 0);
+
+      renderer.render(
+        scene,
+        camera
+      );
+
+    }
+
+
+    animate();
+
+
+    /*
+      RESPONSIVE
+    */
+
+    window.addEventListener(
+      "resize",
+      () => {
+
+        camera.aspect =
+          window.innerWidth /
+          window.innerHeight;
+
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(
+          window.innerWidth,
+          window.innerHeight
+        );
+
+        renderer.setPixelRatio(
+          Math.min(
+            window.devicePixelRatio,
+            2
+          )
+        );
+
+      }
+    );
+
   </script>
 
 </body>
